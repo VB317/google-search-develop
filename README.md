@@ -4,13 +4,13 @@ Minimal web UI for GeminiPro Chat.
 
 Live demo: [Gemini Pro Chat](https://www.geminiprochat.com)
 
-[![image](https://github.com/babaohuang/GeminiProChat/assets/559171/d02fd440-401a-410d-a112-4b10935624c6)](https://www.geminiprochat.com)
+[![image](https://github.com/VB317/GeminiProChat/assets/559171/d02fd440-401a-410d-a112-4b10935624c6)](https://www.geminiprochat.com)
 
 ## Deploy
 
 ### Deploy With Vercel(Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/babaohuang/GeminiProChat&env=GEMINI_API_KEY&envDescription=Google%20API%20Key%20for%20GeminiProChat&envLink=https://makersuite.google.com/app/apikey&project-name=gemini-pro-chat&repository-name=gemini-pro-chat&demo-title=Gemini%20Pro%20Chat&demo-description=Minimal%20web%20UI%20for%20Gemini%20Pro.&demo-url=https%3A%2F%2Fgeminiprochat.com&demo-image=https%3A%2F%2Fgeminiprochat.com%2Ficon.svg)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/VB317/GeminiProChat&env=GEMINI_API_KEY&envDescription=Google%20API%20Key%20for%20GeminiProChat&envLink=https://makersuite.google.com/app/apikey&project-name=gemini-pro-chat&repository-name=gemini-pro-chat&demo-title=Gemini%20Pro%20Chat&demo-description=Minimal%20web%20UI%20for%20Gemini%20Pro.&demo-url=https%3A%2F%2Fgeminiprochat.com&demo-image=https%3A%2F%2Fgeminiprochat.com%2Ficon.svg)
 
 Just click the button above and follow the instructions to deploy your own copy of the app.
 
@@ -47,7 +47,7 @@ docker run --name geminiprochat \
 -p 3000:3000 \
 -itd \
 -e GEMINI_API_KEY=your_api_key_here \
-babaohuang/geminiprochat:latest
+VB317/geminiprochat:latest
 ```
 Please make sure to replace `your_api_key_here` with your own GEMINI API key.
 
@@ -60,7 +60,7 @@ You can control the website through environment variables.
 | Name | Description | Required |
 | --- | --- | --- |
 | `GEMINI_API_KEY` | Your API Key for GEMINI. You can get it from [here](https://makersuite.google.com/app/apikey).| **Yes** |
-| `API_BASE_URL` | Custom base url for GEMINI API. Click [here](https://github.com/babaohuang/GeminiProChat?tab=readme-ov-file#solution-for-user-location-is-not-supported-for-the-api-use) to see when to use this. | No |
+| `API_BASE_URL` | Custom base url for GEMINI API. Click [here](https://github.com/VB317/GeminiProChat?tab=readme-ov-file#solution-for-user-location-is-not-supported-for-the-api-use) to see when to use this. | No |
 | `HEAD_SCRIPTS` | Inject analytics or other scripts before `</head>` of the page | No |
 | `PUBLIC_SECRET_KEY` | Secret string for the project. Use for generating signatures for API calls | No |
 | `SITE_PASSWORD` | Set password for site, support multiple password separated by comma. If not set, site will be public | No |
@@ -110,10 +110,10 @@ This project is inspired by and based on the following open-source project:
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=babaohuang/geminiprochat&type=Timeline)](https://star-history.com/#babaohuang/geminiprochat&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=VB317/geminiprochat&type=Timeline)](https://star-history.com/#VB317/geminiprochat&Timeline)
 
 ## Buy me a coffee
 
 If this repo is helpful to you, buy me a coffee,thank you very much!😄
 
-<a href="https://www.buymeacoffee.com/babaohuang" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<a href="https://www.buymeacoffee.com/VB317" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
