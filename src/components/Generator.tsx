@@ -1,4 +1,4 @@
-import { Index, Show, createEffect, createSignal, onCleanup, onMount } from 'solid-js'
+import { Index, Show, createEffect, createMemo, createSignal, onCleanup, onMount } from 'solid-js'
 import { useThrottleFn } from 'solidjs-use'
 import { generateSignature } from '@/utils/auth'
 import IconClear from './icons/Clear'
@@ -12,6 +12,7 @@ export default () => {
   const EXPORT_CONFIG_KEY = 'chatExportConfig'
   const DEFAULT_PAIR_COUNT = 1
   const DEFAULT_EXPORT_ALL = false
+  const TOC_LABEL_MAX = 72
 
   let inputRef: HTMLTextAreaElement
   const [messageList, setMessageList] = createSignal<ChatMessage[]>([])
@@ -22,7 +23,60 @@ export default () => {
   const [isStick, setStick] = createSignal(false)
   const [showComingSoon, setShowComingSoon] = createSignal(false)
   const [exportNotice, setExportNotice] = createSignal('')
+  const [isTocOpen, setIsTocOpen] = createSignal(false)
   const maxHistoryMessages = parseInt(import.meta.env.PUBLIC_MAX_HISTORY_MESSAGES || '99')
+
+  const normalizeText = (value: string) => value.replace(/\s+/g, ' ').trim()
+  const truncateText = (value: string, max: number) => {
+    if (value.length <= max)
+      return value
+    return `${value.slice(0, max - 1).trimEnd()}…`
+  }
+
+  const escapeHtml = (value: string) => {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+  }
+
+  const questionMetaByMessageIndex = createMemo(() => {
+    const meta: Record<number, { id: string, number: number }> = {}
+    let questionNumber = 0
+
+    messageList().forEach((message, index) => {
+      if (message.role === 'user') {
+        questionNumber++
+        meta[index] = {
+          id: `q-${questionNumber}`,
+          number: questionNumber,
+        }
+      }
+    })
+
+    return meta
+  })
+
+  const tocItems = createMemo(() => {
+    const items: Array<{ id: string, number: number, label: string }> = []
+    const meta = questionMetaByMessageIndex()
+    const messages = messageList() as unknown as Array<{ role: string, content: string }>
+
+    messages.forEach((message, index) => {
+      if (message.role === 'user' && meta[index]) {
+        const label = truncateText(normalizeText(message.content), TOC_LABEL_MAX)
+        items.push({
+          id: meta[index].id,
+          number: meta[index].number,
+          label: label || `Question ${meta[index].number}`,
+        })
+      }
+    })
+
+    return items
+  })
 
   createEffect(() => (isStick() && smoothToBottom()))
 
@@ -282,6 +336,33 @@ export default () => {
     })
   }
 
+  const buildExportToc = (pairs: { question: string }[]) => {
+    if (!pairs.length)
+      return [] as string[]
+
+    const toc: string[] = [
+      '<details class="qa-toc-panel">',
+      '<summary>Questions navigation</summary>',
+      '<nav class="qa-toc-links">',
+      '<ul>',
+    ]
+
+    pairs.forEach((pair, index) => {
+      const questionNumber = index + 1
+      const id = `q-${questionNumber}`
+      const label = truncateText(normalizeText(pair.question), TOC_LABEL_MAX)
+      const safeLabel = escapeHtml(label || `Question ${questionNumber}`)
+      toc.push(`<li><a href="#${id}">Q${questionNumber}. ${safeLabel}</a></li>`)
+    })
+
+    toc.push('</ul>')
+    toc.push('</nav>')
+    toc.push('</details>')
+    toc.push('')
+
+    return toc
+  }
+
   const buildExportMarkdown = (pairs: { question: string, answer: string }[]) => {
     const now = new Date()
     const header = [
@@ -293,13 +374,15 @@ export default () => {
       '',
     ]
 
+    const tocBlock = buildExportToc(pairs)
+
     const content: string[] = []
     pairs.forEach((pair, index) => {
-      content.push(`## Pair ${index + 1}`)
+      const questionNumber = index + 1
+      const questionId = `q-${questionNumber}`
+      content.push(`## Pair ${questionNumber}`)
       content.push('')
-      content.push('### Question')
-      content.push('')
-      content.push(pair.question)
+      content.push(`<p id="${questionId}" class="qa-question-line"><a class="qa-question-tag" href="#${questionId}">#Q${questionNumber}</a> ${escapeHtml(pair.question)}</p>`)
       content.push('')
       content.push('### Answer')
       content.push('')
@@ -307,7 +390,17 @@ export default () => {
       content.push('')
     })
 
-    return [...header, ...content].join('\n')
+    return [...header, ...tocBlock, ...content].join('\n')
+  }
+
+  const scrollToQuestion = (id: string) => {
+    const target = document.getElementById(id)
+    if (!target)
+      return
+
+    target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (window.history && window.history.replaceState)
+      window.history.replaceState(null, '', `#${id}`)
   }
 
   const downloadMarkdown = () => {
@@ -341,6 +434,39 @@ export default () => {
 
   return (
     <div my-6>
+      <Show when={tocItems().length > 0}>
+        <aside class="qa-toc-web" classList={{ 'is-open': isTocOpen() }}>
+          <button
+            type="button"
+            class="qa-toc-toggle"
+            aria-expanded={isTocOpen()}
+            onClick={() => setIsTocOpen(!isTocOpen())}
+          >
+            {isTocOpen() ? 'Hide questions' : `Questions (${tocItems().length})`}
+          </button>
+          <Show when={isTocOpen()}>
+            <nav class="qa-toc-nav" aria-label="Question navigation">
+              <Index each={tocItems()}>
+                {item => (
+                  <a
+                    class="qa-toc-link"
+                    href={`#${item().id}`}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      scrollToQuestion(item().id)
+                      setIsTocOpen(false)
+                    }}
+                  >
+                    <span class="qa-toc-link-number">Q{item().number}.</span>
+                    <span class="qa-toc-link-text">{item().label}</span>
+                  </a>
+                )}
+              </Index>
+            </nav>
+          </Show>
+        </aside>
+      </Show>
+
       {/* beautiful coming soon alert box, position: fixed, screen center, no transparent background, z-index 100*/}
       <Show when={showComingSoon()}>
         <div class="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-100">
@@ -357,14 +483,38 @@ export default () => {
       </Show>
 
       <Index each={messageList()}>
-        {(message, index) => (
-          <MessageItem
-            role={message().role}
-            message={message().content}
-            showRetry={() => (message().role === 'assistant' && index === messageList().length - 1)}
-            onRetry={retryLastFetch}
-          />
-        )}
+        {(message, index) => {
+          const questionMeta = () => questionMetaByMessageIndex()[index]
+          return (
+            <div
+              id={message().role === 'user' ? questionMeta()?.id : undefined}
+            >
+              <Show when={message().role === 'user'}>
+                <div class="qa-question-meta">
+                  <a
+                    class="qa-question-tag"
+                    href={`#${questionMeta()?.id}`}
+                    onClick={(event) => {
+                      event.preventDefault()
+                      if (questionMeta()?.id) {
+                        scrollToQuestion(questionMeta().id)
+                        setIsTocOpen(false)
+                      }
+                    }}
+                  >
+                    #Q{questionMeta()?.number}
+                  </a>
+                </div>
+              </Show>
+              <MessageItem
+                role={message().role}
+                message={message().content}
+                showRetry={() => (message().role === 'assistant' && index === messageList().length - 1)}
+                onRetry={retryLastFetch}
+              />
+            </div>
+          )
+        }}
       </Index>
       {currentAssistantMessage() && (
         <MessageItem

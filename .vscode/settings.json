@@ -9,5 +9,8 @@
       "astro", // Enable .astro
       "typescript", // Enable .ts
       "typescriptreact" // Enable .tsx
+  ],
+  "markdown.styles": [
+    ".vscode/claude-markdown.css"
   ]
 }

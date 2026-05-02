@@ -1,0 +1,157 @@
+:root {
+  --md-claude-bg: #181715;
+  --md-claude-fg: #faf9f5;
+  --md-claude-body: #d6cec3;
+  --md-claude-muted: #a09d96;
+  --md-claude-border: rgba(230, 223, 216, 0.28);
+  --md-claude-surface: #252320;
+  --md-claude-surface-soft: #1f1e1b;
+  --md-claude-accent: #cc785c;
+}
+
+body.vscode-body {
+  background: var(--md-claude-bg) !important;
+  color: var(--md-claude-body) !important;
+  font-family: "StyreneB", "Inter", system-ui, sans-serif !important;
+  line-height: 1.72 !important;
+}
+
+body.vscode-body h1,
+body.vscode-body h2,
+body.vscode-body h3,
+body.vscode-body h4,
+body.vscode-body h5,
+body.vscode-body h6 {
+  color: var(--md-claude-fg) !important;
+  font-family: "Copernicus", "Tiempos Headline", serif !important;
+  font-weight: 400 !important;
+  letter-spacing: -0.01em;
+}
+
+body.vscode-body p,
+body.vscode-body li,
+body.vscode-body td,
+body.vscode-body th,
+body.vscode-body blockquote {
+  color: var(--md-claude-body) !important;
+}
+
+body.vscode-body a {
+  color: var(--md-claude-accent) !important;
+}
+
+body.vscode-body hr,
+body.vscode-body table tr,
+body.vscode-body table th,
+body.vscode-body table td {
+  border-color: var(--md-claude-border) !important;
+}
+
+body.vscode-body code {
+  background: var(--md-claude-surface-soft) !important;
+  color: var(--md-claude-fg) !important;
+  border: 1px solid var(--md-claude-border) !important;
+  border-radius: 6px;
+  padding: 0.12rem 0.35rem;
+}
+
+body.vscode-body pre {
+  background: var(--md-claude-surface) !important;
+  border: 1px solid var(--md-claude-border) !important;
+  border-radius: 10px;
+}
+
+body.vscode-body pre code {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0;
+}
+
+body.vscode-body blockquote {
+  border-left: 3px solid var(--md-claude-accent) !important;
+  padding-left: 1rem;
+}
+
+body.vscode-body .qa-question-line {
+  color: var(--md-claude-fg);
+  margin: 0.35rem 0 0.95rem;
+  line-height: 1.6;
+  scroll-margin-top: 1rem;
+}
+
+body.vscode-body .qa-question-tag {
+  display: inline-flex;
+  align-items: center;
+  margin-right: 0.45rem;
+  border: 1px solid var(--md-claude-border);
+  background: var(--md-claude-surface-soft);
+  color: var(--md-claude-muted) !important;
+  border-radius: 999px;
+  padding: 0.16rem 0.45rem;
+  text-decoration: none;
+  font-size: 0.74rem;
+  line-height: 1;
+}
+
+body.vscode-body .qa-question-tag:hover {
+  color: var(--md-claude-accent) !important;
+  border-color: color-mix(in srgb, var(--md-claude-accent) 55%, var(--md-claude-border));
+}
+
+body.vscode-body .qa-toc-panel {
+  position: fixed;
+  right: 16px;
+  top: 76px;
+  z-index: 50;
+  width: min(340px, calc(100vw - 32px));
+  border: 1px solid var(--md-claude-border);
+  border-radius: 12px;
+  background: var(--md-claude-surface);
+  overflow: hidden;
+}
+
+body.vscode-body .qa-toc-panel > summary {
+  list-style: none;
+  cursor: pointer;
+  color: var(--md-claude-fg);
+  padding: 0.65rem 0.85rem;
+  font-size: 0.9rem;
+}
+
+body.vscode-body .qa-toc-panel > summary::-webkit-details-marker {
+  display: none;
+}
+
+body.vscode-body .qa-toc-links {
+  border-top: 1px solid var(--md-claude-border);
+  max-height: min(58vh, 420px);
+  overflow: auto;
+  padding: 0.35rem;
+}
+
+body.vscode-body .qa-toc-links ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+body.vscode-body .qa-toc-links a {
+  display: block;
+  color: var(--md-claude-body) !important;
+  text-decoration: none;
+  padding: 0.45rem 0.55rem;
+  border-radius: 8px;
+  line-height: 1.35;
+}
+
+body.vscode-body .qa-toc-links a:hover {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--md-claude-fg) !important;
+}
+
+@media (max-width: 980px) {
+  body.vscode-body .qa-toc-panel {
+    top: auto;
+    bottom: 16px;
+  }
+}
