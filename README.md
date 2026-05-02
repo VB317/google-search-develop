@@ -9,13 +9,13 @@ Minimal web UI for Gemini Pro Chat.
 
 Live demo: [Gemini Pro Chat](https://gprochat.orzllc.com)
 
-[![image](https://github.com/babaohuang/GeminiProChat/assets/559171/d02fd440-401a-410d-a112-4b10935624c6)](https://www.geminiprochat.com)
+[![image](https://github.com/VB317/google-search-develop/assets/559171/d02fd440-401a-410d-a112-4b10935624c6)](https://www.geminiprochat.com)
 
 ## Deploy
 
 ### Deploy With Vercel(Recommended)
 
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/babaohuang/GeminiProChat&env=GEMINI_API_KEY&envDescription=Google%20API%20Key%20for%20GeminiProChat&envLink=https://makersuite.google.com/app/apikey&project-name=gemini-pro-chat&repository-name=gemini-pro-chat&demo-title=Gemini%20Pro%20Chat&demo-description=Minimal%20web%20UI%20for%20Gemini%20Pro.&demo-url=https%3A%2F%2Fgeminiprochat.com&demo-image=https%3A%2F%2Fgeminiprochat.com%2Ficon.svg)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/VB317/google-search-develop&env=GEMINI_API_KEY&envDescription=Google%20API%20Key%20for%20GeminiProChat&envLink=https://makersuite.google.com/app/apikey&project-name=gemini-pro-chat&repository-name=google-search-develop&demo-title=Gemini%20Pro%20Chat&demo-description=Minimal%20web%20UI%20for%20Gemini%20Pro.&demo-url=https%3A%2F%2Fgeminiprochat.com&demo-image=https%3A%2F%2Fgeminiprochat.com%2Ficon.svg)
 
 Just click the button above and follow the instructions to deploy your own copy of the app.
 
@@ -42,7 +42,7 @@ docker run --name geminiprochat \
 -p 3000:3000 \
 -itd \
 -e GEMINI_API_KEY=your_api_key_here \
-babaohuang/geminiprochat:latest
+VB317/google-search-develop:latest
 ```
 Please make sure to replace `your_api_key_here` with your own GEMINI API key.
 
@@ -55,11 +55,11 @@ You can control the website through environment variables.
 | Name | Description | Required |
 | --- | --- | --- |
 | `GEMINI_API_KEY` | Your API Key for GEMINI. You can get it from [here](https://makersuite.google.com/app/apikey).| **✔** |
-| `API_BASE_URL` | Custom base url for GEMINI API. Click [here](https://github.com/babaohuang/GeminiProChat?tab=readme-ov-file#solution-for-user-location-is-not-supported-for-the-api-use) to see when to use this. | ❌ |
+| `API_BASE_URL` | Custom base url for GEMINI API. Click [here](https://github.com/VB317/google-search-develop?tab=readme-ov-file#solution-for-user-location-is-not-supported-for-the-api-use) to see when to use this. | ❌ |
 | `HEAD_SCRIPTS` | Inject analytics or other scripts before `</head>` of the page | ❌ |
 | `PUBLIC_SECRET_KEY` | Secret string for the project. Use for generating signatures for API calls | ❌ |
 | `SITE_PASSWORD` | Set password for site, support multiple password separated by comma. If not set, site will be public | ❌ |
-| `GEMINI_MODEL_NAME` | Customize the Gemini model to use. Defaults to `gemini-2.5-flash` if not set | ❌ |
+| `GEMINI_MODEL_NAME` | Customize the Gemini model to use. Defaults to `gemini-3-flash-preview` if not set | ❌ |
 
 ## Running Locally
 
@@ -106,13 +106,13 @@ This project is inspired by and based on the following open-source project:
 
 ## Star History
 
-[![Star History Chart](https://api.star-history.com/svg?repos=babaohuang/geminiprochat&type=Timeline)](https://star-history.com/#babaohuang/geminiprochat&Timeline)
+[![Star History Chart](https://api.star-history.com/svg?repos=VB317/google-search-develop&type=Timeline)](https://star-history.com/#VB317/google-search-develop&Timeline)
 
 ## Buy me a coffee
 
 If this repo is helpful to you, buy me a coffee,thank you very much!😄
 
-<a href="https://www.buymeacoffee.com/babaohuang" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
+<a href="https://www.buymeacoffee.com/VB317" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="41" width="174"></a>
 
 ## Recommended AI Tools
 
