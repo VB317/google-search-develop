@@ -1,0 +1,140 @@
+---
+import Layout from '../layouts/Layout.astro'
+---
+
+<Layout title="Config">
+  <main class="config-main">
+    <h1 class="config-title">Configuration</h1>
+    <p class="config-desc">Settings are saved in this browser.</p>
+
+    <div class="config-card">
+      <label for="pair_count">Number of pairs to export</label>
+      <input id="pair_count" type="number" min="1" step="1" class="config-input" />
+      <p class="config-tip">A pair is 1 question + 1 answer. Incomplete pair is ignored.</p>
+
+      <label class="config-checkbox">
+        <input id="export_all" type="checkbox" />
+        <span>Download all complete chat pairs currently shown on UI</span>
+      </label>
+    </div>
+
+    <div class="config-actions">
+      <button id="save_btn" class="gpt-password-submit">Save</button>
+      <a href="/" class="config-back">Back to chat</a>
+    </div>
+  </main>
+</Layout>
+
+<script>
+const STORAGE_KEY = 'chatExportConfig'
+const DEFAULT_CONFIG = { pairCount: 1, exportAll: false }
+
+const input = document.getElementById('pair_count') as HTMLInputElement
+const exportAllInput = document.getElementById('export_all') as HTMLInputElement
+const saveBtn = document.getElementById('save_btn') as HTMLButtonElement
+
+const readConfig = () => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    if (!raw)
+      return DEFAULT_CONFIG
+
+    const parsed = JSON.parse(raw)
+    const count = Number(parsed?.pairCount)
+    const exportAll = Boolean(parsed?.exportAll)
+    if (String(count).indexOf('.') !== -1 || isNaN(count) || count < 1)
+      return { pairCount: 1, exportAll }
+
+    return { pairCount: count, exportAll }
+  } catch {
+    return DEFAULT_CONFIG
+  }
+}
+
+const writeConfig = (pairCount: number, exportAll: boolean) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify({ pairCount, exportAll }))
+}
+
+const showSaved = () => {
+  const oldText = saveBtn.textContent
+  saveBtn.textContent = 'Saved'
+  setTimeout(() => {
+    saveBtn.textContent = oldText
+  }, 800)
+}
+
+const init = () => {
+  const config = readConfig()
+  input.value = String(config.pairCount)
+  exportAllInput.checked = config.exportAll
+}
+
+saveBtn.addEventListener('click', () => {
+  const count = Number(input.value)
+  const validCount = (String(count).indexOf('.') === -1 && !isNaN(count) && count > 0) ? count : 1
+  const exportAll = exportAllInput.checked
+  input.value = String(validCount)
+  writeConfig(validCount, exportAll)
+  showSaved()
+})
+
+init()
+</script>
+
+<style>
+.config-main {
+  max-width: 48rem;
+}
+
+.config-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+}
+
+.config-desc {
+  opacity: 0.7;
+  margin-top: 0.5rem;
+}
+
+.config-card {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.config-input {
+  width: 100%;
+  max-width: 14rem;
+  border-radius: 0.5rem;
+  border: 1px solid #9996;
+  padding: 0.6rem 0.75rem;
+  background: transparent;
+  color: inherit;
+}
+
+.config-tip {
+  opacity: 0.7;
+  font-size: 0.9rem;
+}
+
+.config-checkbox {
+  margin-top: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  opacity: 0.95;
+}
+
+.config-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.config-back {
+  text-decoration: none;
+  opacity: 0.9;
+}
+</style>

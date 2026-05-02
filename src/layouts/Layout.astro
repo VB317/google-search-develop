@@ -11,6 +11,15 @@ const { title } = Astro.props;
 <!DOCTYPE html>
 <html>
   <head>
+    <script is:inline>
+      (() => {
+        const storageTheme = localStorage.getItem('ui-theme')
+        const uiTheme = storageTheme === 'warp' ? 'warp' : 'claude'
+        const root = document.documentElement
+        root.classList.add('dark')
+        root.setAttribute('data-ui-theme', uiTheme)
+      })()
+    </script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover">
     <link rel="icon" type="image/svg+xml" href="/icon.svg">
@@ -31,24 +40,50 @@ const { title } = Astro.props;
 
 <style is:global>
   :root {
-    --c-bg: #fbfbfb;
-    --c-fg: #444444;
-    --c-scroll: #d9d9d9;
-    --c-scroll-hover: #bbbbbb;
+    --c-bg: #1f1d1a;
+    --c-fg: #e8e3dc;
+    --c-text-secondary: #b8b0a7;
+    --c-text-muted: #918981;
+    --c-surface: #353534;
+    --c-surface-veil: rgba(255, 255, 255, 0.04);
+    --c-border: rgba(226, 226, 226, 0.35);
+    --c-primary: #afaeac;
+    --c-primary-active: #868584;
+    --c-scroll: #666469;
+    --c-scroll-hover: #868584;
+    --c-font-body: 'Matter Regular', 'Matter', 'Inter', system-ui, sans-serif;
+    --c-font-display: 'Matter Regular', 'Matter', 'Inter', system-ui, sans-serif;
     scrollbar-color: var(--c-scrollbar) var(--c-bg);
   }
 
-  html {
-    font-family: system-ui, sans-serif;
-    background-color: var(--c-bg);
-    color: var(--c-fg);
+  html[data-ui-theme='claude'] {
+    --c-bg: #181715;
+    --c-fg: #faf9f5;
+    --c-text-secondary: #bfb8ae;
+    --c-text-muted: #a09d96;
+    --c-surface: #252320;
+    --c-surface-veil: rgba(250, 249, 245, 0.04);
+    --c-border: rgba(230, 223, 216, 0.28);
+    --c-primary: #cc785c;
+    --c-primary-active: #a9583e;
+    --c-scroll: #716c63;
+    --c-scroll-hover: #a09d96;
+    --c-font-body: 'StyreneB', 'Inter', system-ui, sans-serif;
+    --c-font-display: 'Copernicus', 'Tiempos Headline', serif;
   }
 
-  html.dark {
-    --c-bg: #212129;
-    --c-fg: #ddddf0;
-    --c-scroll: #333333;
-    --c-scroll-hover: #555555;
+  html {
+    font-family: var(--c-font-body);
+    background-color: var(--c-bg);
+    color: var(--c-fg);
+    background-image: radial-gradient(circle at 20% 0%, rgba(255, 255, 255, 0.035), transparent 46%);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background: transparent;
   }
 
   main {
@@ -100,22 +135,3 @@ const { title } = Astro.props;
     z-index: 1;
   }
 </style>
-
-<script>
-const initTheme = () => {
-  const darkSchema
-    = window.matchMedia
-    && window.matchMedia('(prefers-color-scheme: dark)').matches
-  const storageTheme = localStorage.getItem('theme')
-  if (storageTheme) {
-    document.documentElement.classList.toggle(
-      'dark',
-      storageTheme === 'dark',
-    )
-  } else {
-    document.documentElement.classList.toggle('dark', darkSchema)
-  }
-}
-
-initTheme()
-</script>
