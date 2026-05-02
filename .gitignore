@@ -24,6 +24,7 @@ pnpm-debug.log*
 
 # Local
 *.local
+.local-secrets/
 
 **/.DS_Store
 
