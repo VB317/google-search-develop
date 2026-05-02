@@ -2,7 +2,7 @@ import { GoogleGenerativeAI } from '@fuyun/generative-ai'
 
 const apiKey = (import.meta.env.GEMINI_API_KEY)
 const apiBaseUrl = (import.meta.env.API_BASE_URL)?.trim().replace(/\/$/, '')
-const modelName = (import.meta.env.GEMINI_MODEL_NAME) || 'gemini-2.5-flash'
+const modelName = (import.meta.env.GEMINI_MODEL_NAME) || 'gemini-3-flash-preview'
 
 const genAI = apiBaseUrl
   ? new GoogleGenerativeAI(apiKey, apiBaseUrl)
