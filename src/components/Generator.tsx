@@ -9,6 +9,10 @@ import ErrorMessageItem from './ErrorMessageItem'
 import type { ChatMessage, ErrorMessage } from '@/types'
 
 export default () => {
+  const EXPORT_CONFIG_KEY = 'chatExportConfig'
+  const DEFAULT_PAIR_COUNT = 1
+  const DEFAULT_EXPORT_ALL = false
+
   let inputRef: HTMLTextAreaElement
   const [messageList, setMessageList] = createSignal<ChatMessage[]>([])
   const [currentError, setCurrentError] = createSignal<ErrorMessage>()
@@ -17,6 +21,7 @@ export default () => {
   const [controller, setController] = createSignal<AbortController>(null)
   const [isStick, setStick] = createSignal(false)
   const [showComingSoon, setShowComingSoon] = createSignal(false)
+  const [exportNotice, setExportNotice] = createSignal('')
   const maxHistoryMessages = parseInt(import.meta.env.PUBLIC_MAX_HISTORY_MESSAGES || '99')
 
   createEffect(() => (isStick() && smoothToBottom()))
@@ -211,6 +216,129 @@ export default () => {
     setShowComingSoon(true)
   }
 
+  const clearExportNotice = () => {
+    setTimeout(() => {
+      setExportNotice('')
+    }, 2000)
+  }
+
+  const getExportConfig = () => {
+    try {
+      const raw = localStorage.getItem(EXPORT_CONFIG_KEY)
+      if (!raw)
+        return { pairCount: DEFAULT_PAIR_COUNT, exportAll: DEFAULT_EXPORT_ALL }
+
+      const parsed = JSON.parse(raw)
+      const pairCount = Number(parsed?.pairCount)
+      const exportAll = Boolean(parsed?.exportAll)
+      if (String(pairCount).indexOf('.') !== -1 || isNaN(pairCount) || pairCount < 1)
+        return { pairCount: DEFAULT_PAIR_COUNT, exportAll }
+
+      return { pairCount, exportAll }
+    } catch {
+      return { pairCount: DEFAULT_PAIR_COUNT, exportAll: DEFAULT_EXPORT_ALL }
+    }
+  }
+
+  const toDateCompact = (date: Date) => {
+    const pad2 = (value: number) => (value < 10 ? `0${value}` : String(value))
+    const yyyy = String(date.getFullYear())
+    const mm = pad2(date.getMonth() + 1)
+    const dd = pad2(date.getDate())
+    const hh = pad2(date.getHours())
+    const min = pad2(date.getMinutes())
+    return `${yyyy}${mm}${dd}-${hh}${min}`
+  }
+
+  const getCompletePairs = () => {
+    const pairs: { question: string, answer: string }[] = []
+    const messages = messageList() as Array<{ role: string, content: string }>
+
+    for (let i = 0; i < messages.length - 1; i++) {
+      const current = messages[i]
+      const next = messages[i + 1]
+
+      if (current.role === 'user' && next.role === 'assistant') {
+        pairs.push({
+          question: current.content,
+          answer: next.content,
+        })
+        i++
+      }
+    }
+
+    return pairs
+  }
+
+  const normalizeAnswerHeadings = (answer: string) => {
+    return answer.replace(/^(#{1,6})(\s+)/gm, (_match, hashes: string, spaces: string) => {
+      const currentLevel = hashes.length
+      const nestedLevel = currentLevel + 3 > 6 ? 6 : currentLevel + 3
+      let nestedHashes = ''
+      for (let i = 0; i < nestedLevel; i++)
+        nestedHashes += '#'
+
+      return `${nestedHashes}${spaces}`
+    })
+  }
+
+  const buildExportMarkdown = (pairs: { question: string, answer: string }[]) => {
+    const now = new Date()
+    const header = [
+      '# Chat Export',
+      '',
+      `- Generated at: ${now.toISOString()}`,
+      `- Exported pairs: ${pairs.length}`,
+      `- Source: ${window.location.origin}`,
+      '',
+    ]
+
+    const content: string[] = []
+    pairs.forEach((pair, index) => {
+      content.push(`## Pair ${index + 1}`)
+      content.push('')
+      content.push('### Question')
+      content.push('')
+      content.push(pair.question)
+      content.push('')
+      content.push('### Answer')
+      content.push('')
+      content.push(normalizeAnswerHeadings(pair.answer))
+      content.push('')
+    })
+
+    return [...header, ...content].join('\n')
+  }
+
+  const downloadMarkdown = () => {
+    const exportConfig = getExportConfig()
+    const completePairs = getCompletePairs()
+    if (!completePairs.length) {
+      setExportNotice('No complete Q&A pair to export')
+      clearExportNotice()
+      return
+    }
+
+    const selectedPairs = exportConfig.exportAll
+      ? completePairs
+      : completePairs.slice(-exportConfig.pairCount)
+    const markdown = buildExportMarkdown(selectedPairs)
+    const filename = `chat-export-${toDateCompact(new Date())}.md`
+
+    const blob = new Blob([markdown], { type: 'text/markdown;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = filename
+    document.body.append(anchor)
+    anchor.click()
+    anchor.remove()
+    URL.revokeObjectURL(url)
+
+    setExportNotice(`Exported ${selectedPairs.length} pair(s)`)
+    clearExportNotice()
+  }
+
   return (
     <div my-6>
       {/* beautiful coming soon alert box, position: fixed, screen center, no transparent background, z-index 100*/}
@@ -277,7 +405,16 @@ export default () => {
           <button title="Clear" onClick={clear} gen-slate-btn>
             <IconClear />
           </button>
+          <button title="Config" onClick={() => { window.location.href = '/config' }} gen-slate-btn>
+            Config
+          </button>
+          <button title="Download Markdown" onClick={downloadMarkdown} gen-slate-btn>
+            <div i-carbon-download />
+          </button>
         </div>
+        {exportNotice() && (
+          <div class="mt-2 text-sm op-75">{exportNotice()}</div>
+        )}
       </Show>
       {/* <div class="fixed bottom-5 left-5 rounded-md hover:bg-slate/10 w-fit h-fit transition-colors active:scale-90" class:stick-btn-on={isStick()}>
         <div>
